@@ -1,1 +1,1 @@
-scanning networks on targetedsystem
+scanning networks on targeted system  using nmap + metasploite + maltego
